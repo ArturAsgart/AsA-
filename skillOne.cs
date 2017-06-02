@@ -5,14 +5,17 @@ public class skillOne : MonoBehaviour
 {
     public Vector2 speed;
     Rigidbody2D rb;
+    public int dodmg;
+    public enemyHP enemyhp;
+   
 	// Use this for initialization
 	void Start ()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.velocity = speed;
-
-
-
+     //   enemyhp = GetComponent<enemyHP>();
+        //enhp = GetComponent<enemyHP>();
+        
 
 	}
 	
@@ -27,21 +30,23 @@ public class skillOne : MonoBehaviour
         rb.velocity = speed;
 
     }
-    // kill gameObjeck with tag will  be Destroyed
-     void OnCollisionEnter2D(Collision2D other)
+    // kill gameObjeck with collider trigger 
+     void OnTriggerEnter2D (Collider2D other)
       {
+        
 
 
-
-
-
+       // do dmg and killskill 
         if (other.gameObject.CompareTag ("enemy"))
          {
-
-             Destroy(other.gameObject);
-             Destroy(gameObject);
-
+           
+            Debug.Log("lol");
+            other.SendMessageUpwards("takeeDMG", dodmg);
+            Destroy(gameObject);
+           
+           
         }
+        
 
        
     }
