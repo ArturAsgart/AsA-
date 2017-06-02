@@ -23,12 +23,17 @@ public class KillPlayer : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D other)
     {
 
-        if(other.name == "sharlotte")
+        if (other.name == "sharlotte")
         {
-            
+
             lvlManeger.RespawnPlayer();
         }
+        if (other.gameObject.CompareTag("littlebullet"))
+                {
+            Destroy(other.gameObject);
+            Destroy(gameObject);
 
+           }
 
     }
 

@@ -8,6 +8,22 @@ public class Menu : MonoBehaviour
     {
 
         SceneManager.LoadScene(sceneName);
+        Time.timeScale = 1f;
+
+
+
     }
 	
+    public void ClickExit()
+    {
+        
+
+
+
+      //  UnityEditor.EditorApplication.isPlaying = false;
+
+        Application.Quit();
+
+    }
+
 }

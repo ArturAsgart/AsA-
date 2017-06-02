@@ -6,11 +6,27 @@ public class PlayerManagerM : MonoBehaviour
     public float speedX;
     public float jumpSpeedY;
     public float delayBeforeDubleJump;
+
     public GameObject skillOneLeft, skillOneRight;
     public GameObject skill2Left, skill2Right;
+    //CD on Skill one 
     public float CooldownSkillOne;
-    public float CDcountdown;
-    bool facingRight, jumping, isGrounded, canDubleJump;
+    //TIME COUNTER
+    public float CDcountdownSkillOne;
+    // CD on skill 2
+    public float CooldownSkill2;
+    // TIME COUNTER 2
+    public float CDcountdownSkill2;
+
+
+
+    //timer on falling animation (killing bug falling )
+    public float ColldownFalling;
+    public float CDcounterFalling;
+
+
+    // Other
+    public bool facingRight, jumping, isGrounded, canDubleJump;
     float speed;
 
     
@@ -22,24 +38,59 @@ public class PlayerManagerM : MonoBehaviour
     
     Animator sharlotte;
     Rigidbody2D rb;
+
+
+    public AudioClip teleportSound;
+
+    
+
+
+
     // Use this for initialization
     void Start()
+
+
+
+
+
+
+
     {
+       
         sharlotte = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         facingRight = true;
         skillPosition = transform.FindChild("skillPosition");
         skillPosition2 = transform.FindChild("skillPosition");
-        CDcountdown = 0;    
-        
+        CDcountdownSkillOne = 0;
+        CDcountdownSkill2 = 0;
+        CDcounterFalling = 0;
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (CDcountdown>0)
+
+        
+       
+
+
+        if (CDcountdownSkillOne > 0)
         {
-            CDcountdown -= Time.deltaTime;
+            CDcountdownSkillOne -= Time.deltaTime;
+        }
+
+
+        if (CDcountdownSkill2>0)
+        {
+            CDcountdownSkill2 -= Time.deltaTime;
+        }
+
+        if (CDcounterFalling > 0)
+        {
+            CDcounterFalling -= Time.deltaTime;
         }
 
         // player movement
@@ -93,7 +144,7 @@ public class PlayerManagerM : MonoBehaviour
         // skill1 
         if (Input.GetKeyDown(KeyCode.S))
         {
-
+            
             skillOne();
             
         }
@@ -113,12 +164,22 @@ public class PlayerManagerM : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D other)
     {
+
+       
+       
+
         if (other.gameObject.tag == "mc")
         {
+            
+            transform.parent = other.transform;
+            
             isGrounded = true;
             canDubleJump = false;
             jumping = false;
             sharlotte.SetInteger("state", 0);
+
+            //transform.parent = null;
+
         }
 
 
@@ -126,6 +187,13 @@ public class PlayerManagerM : MonoBehaviour
 
     }
 
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "fire")
+        {
+           // 
+        }
+    }
 
 
 
@@ -147,17 +215,23 @@ public class PlayerManagerM : MonoBehaviour
 
             sharlotte.SetInteger("state", 0);
         }
-
+        // Falling animation  and code
         if (rb.velocity.y < 0f)
-        {
+            
+            if (CDcounterFalling <= 0)
+            {
 
-            sharlotte.SetInteger("state", 9);
-        }
+                {
+                
+                sharlotte.SetInteger("state", 9);
+                }
+                isGrounded = false;
+                CDcounterFalling = ColldownFalling;
 
+            }
 
-
-
-    
+        
+        //
 
 
 
@@ -173,7 +247,7 @@ public class PlayerManagerM : MonoBehaviour
         }
        
     }
-
+       //
    
 
 
@@ -224,15 +298,15 @@ public class PlayerManagerM : MonoBehaviour
         canDubleJump = true;
     }
 
-    // animation and flip the skillOne direction
+    // animation and flip the skillOne direction + CD on skillOne
     void skillOne()
     {
-        if (CDcountdown <= 0)
+        if (CDcountdownSkillOne <= 0)
         {
 
-
+           
             sharlotte.Play("AsAskill1");
-
+           
             if (facingRight)
 
                 Instantiate(skillOneRight, skillPosition.position, Quaternion.identity);
@@ -242,7 +316,7 @@ public class PlayerManagerM : MonoBehaviour
 
 
                 Instantiate(skillOneLeft, skillPosition.position, Quaternion.identity);
-            CDcountdown = CooldownSkillOne;
+            CDcountdownSkillOne = CooldownSkillOne;
         }
         
         
@@ -255,11 +329,13 @@ public class PlayerManagerM : MonoBehaviour
 
     }
 
-    // animation and flip skill2 direction
+    // animation and flip skill2 direction + CD on skill2 
     void skill2()
     {
+        if (CDcountdownSkill2 <= 0)
+        {
 
-        
+
 
             sharlotte.Play("AsAskill2");
 
@@ -270,7 +346,9 @@ public class PlayerManagerM : MonoBehaviour
             if (!facingRight)
 
                 Instantiate(skill2Left, skillPosition2.position, Quaternion.identity);
-        
+            CDcountdownSkill2 =  CooldownSkill2;
+
+        }
     }
 
     public void skill22()
@@ -281,31 +359,33 @@ public class PlayerManagerM : MonoBehaviour
 
     }
 
-    //MovingPlatfor collider2d with 
+    //MovingPlatfor collider2d with plyer
 
-    void OnCollisionEnter2D(Collider2D other)
-    {
-
-        if (other.transform.tag == "mc")
-        {
-            transform.parent = other.transform;
-
-
-        }
-
-    }
-
-        void OnCollisionExit2D(Collider2D other)
-    {
-
-            if (other.transform.tag == "mc")
+    /* 
+           void OnCollisionEnter2D(Collider2D other)
             {
-                transform.parent = null;
+           Debug.Log("Player's Parent: ");
+           if (gameObject.CompareTag("mc"))
+                {
+                    //Debug.Log("Player's Parent: ");
+                    transform.parent = other.transform;
 
+                }
 
             }
-        }
 
+            /*   void OnCollisionExit2D(Collider2D other)
+            {
+
+                  if (other.transform.tag == "MovingPlatform")
+                   {
+                        transform.parent = null;
+
+                    Debug.Log("Player's Grand parent: " + rb.transform.parent.parent.name);
+                }
+
+            }
+        */
 
 
 }
