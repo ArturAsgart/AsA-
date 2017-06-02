@@ -6,6 +6,10 @@ public class skill2 : MonoBehaviour
 
     public Vector2 speed;
     Rigidbody2D rb;
+
+
+    public int dodmg;
+    public enemyHP enemyhp;
     // Use this for initialization
     void Start()
     {
@@ -21,13 +25,13 @@ public class skill2 : MonoBehaviour
 
     }
     // kill gameObjeck if tag is one shot
-   void OnCollisionEnter2D(Collision2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
 
         if (other.gameObject.CompareTag( "oneshot") || other.gameObject.CompareTag ( "enemy" ))
         {
-
-            Destroy(other.gameObject);
+            Debug.Log("lol");
+            other.SendMessageUpwards("takeeDMG", dodmg);
             Destroy(gameObject);
 
         }
